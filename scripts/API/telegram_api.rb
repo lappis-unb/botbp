@@ -6,6 +6,7 @@ module BotBP
   class TelegramAPI
     def initialize
       @token = ENV['TELEGRAM_TOKEN']
+
     end
 
     def run_bot
@@ -13,12 +14,16 @@ module BotBP
         bot.listen do |message|
           case message.text
           when '/start'
-            bot.api.send_message(chat_id: message.chat.id, text: "Olá, bem-vindo ao seu bot do Telegram!")
+            puts message.from.id
           when '/stop'
             bot.api.send_message(chat_id: message.chat.id, text: "Até logo!")
           end
         end
       end
+    end
+
+    def verify_user (user_id)
+
     end
   end
 end

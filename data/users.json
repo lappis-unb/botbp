@@ -2,17 +2,12 @@
   "admins":
   [
     {
-      "telegram_user_id": 0,
-      "telegram_user_phone_number": "",
-      "gitlab_user_tag":  ""
+      "telegram_user_id": 6350484681,
+      "telegram_user_phone_number": "+55 12 99638 9028",
+      "gitlab_user_tag":  "@GiovanniAlvissus"
     }
   ],
   "client":
   [
-    {
-      "telegram_user_id": 0,
-      "telegram_user_phone_number": "",
-      "gitlab_user_tag":  ""
-    }
   ]
 }

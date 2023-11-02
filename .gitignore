@@ -1,2 +1,6 @@
 .env
 .idea
+
+data/daily.json
+data/gitlab_projects.json
+data/users.json
