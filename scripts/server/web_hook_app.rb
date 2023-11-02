@@ -4,6 +4,8 @@ require 'json'
 module BotBP
   # Inicializa o servidor webhook e recebe os eventos
   class WebHookApp < Sinatra::Base
+    set :server, :thin # Configura o servidor Thin
+
     post '/gitlab-webhook' do
       payload = JSON.parse(request.body.read)
 
