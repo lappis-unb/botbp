@@ -23,18 +23,6 @@ ruby manager.rb
 
 ## Versoes
 
-As versoes devem ser incrementadas de acordo com as seguintes condicoes:
-
-### **vX.Y.Z**
-
-**X**: versao estavel para uso com novas classes de funcionalidades criadas.
-
-**Y**: versao estavel para uso com metodos e pequenas atualizacoes implementadas.
-
-**Z**: versao estavel para uso com correcao de bugs.
-
----
-
 ### v0.1.0
 
 #### Scripts
