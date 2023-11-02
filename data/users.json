@@ -1,0 +1,18 @@
+{
+  "admins":
+  [
+    {
+      "telegram_user_id": 0,
+      "telegram_user_phone_number": "",
+      "gitlab_user_tag":  ""
+    }
+  ],
+  "client":
+  [
+    {
+      "telegram_user_id": 0,
+      "telegram_user_phone_number": "",
+      "gitlab_user_tag":  ""
+    }
+  ]
+}

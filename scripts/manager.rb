@@ -1,7 +1,7 @@
-require_relative 'API/git_lab_api'
+require_relative 'API/gitlab_api'
 require_relative 'API/telegram_api'
-require_relative 'server/server'
-require_relative 'server/post'
+require_relative 'server/web_hook_app'
+require_relative 'server/post_to_web_hook'
 
 webhook = BotBP::WebHookApp
 
@@ -15,7 +15,7 @@ request_body = { key1: 'value1', key2: 'value2' }.to_json
 post_html = BotBP::PostToWebHook.new
 
 thread_2 = Thread.new do
-  sleep(10)
+  sleep(3)
   10.times do
     post_html.post_to_webhook(url, request_body)
     sleep(3)

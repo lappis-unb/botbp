@@ -1,0 +1,6 @@
+gem 'gitlab', '4.19.*'
+gem 'httparty', '0.21.*'
+gem 'sinatra', '3.1.*'
+gem 'yard', '0.9.*'
+gem 'telegram-bot-ruby', '1.0.*'
+gem 'dotenv', '2.8.*'
