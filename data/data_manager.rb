@@ -14,18 +14,9 @@ module BotBP
 
     def read(type)
       data = load_data
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-=======
       puts data
       puts type
       puts data[type]
->>>>>>> Stashed changes
-=======
-      puts data
-      puts type
-      puts data[type]
->>>>>>> 785d687 (fix: atualizando maneira de lidar com os dados)
       data[type]
     end
 
@@ -61,19 +52,10 @@ module BotBP
   end
 
   class DataUsers < DataManager
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-=======
-=======
->>>>>>> 785d687 (fix: atualizando maneira de lidar com os dados)
     def initialize
       @file_path = "./data/users.json"
     end
 
-<<<<<<< HEAD
->>>>>>> Stashed changes
-=======
->>>>>>> 785d687 (fix: atualizando maneira de lidar com os dados)
     def create(type, telegram_user_id, telegram_user_phone, gitlab_user_tag)
       new_user = {
         "telegram_user_id": telegram_user_id,
@@ -92,32 +74,15 @@ module BotBP
     def load_data
       JSON.parse(File.read(@file_path))
     rescue Errno::ENOENT
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-      { "admins" => [], "client" => [] }
-=======
       { "admins" => [] }
->>>>>>> Stashed changes
-=======
-      { "admins" => [] }
->>>>>>> 785d687 (fix: atualizando maneira de lidar com os dados)
     end
   end
 
   class DataGitlabProjects < DataManager
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-=======
-=======
->>>>>>> 785d687 (fix: atualizando maneira de lidar com os dados)
     def initialize
       @file_path = "./data/gitlab_projects.json"
     end
 
-<<<<<<< HEAD
->>>>>>> Stashed changes
-=======
->>>>>>> 785d687 (fix: atualizando maneira de lidar com os dados)
     def create(type, project_id)
       new_project = {
         "project_id": project_id
@@ -139,19 +104,10 @@ module BotBP
   end
 
   class DataDaily < DataManager
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-=======
-=======
->>>>>>> 785d687 (fix: atualizando maneira de lidar com os dados)
     def initialize
       @file_path = "./data/daily.json"
     end
 
-<<<<<<< HEAD
->>>>>>> Stashed changes
-=======
->>>>>>> 785d687 (fix: atualizando maneira de lidar com os dados)
     def create(type, telegram_user_id, gitlab_user_tag, regex_find, daily_time)
       new_daily = {
         "telegram-user-id": telegram_user_id,
