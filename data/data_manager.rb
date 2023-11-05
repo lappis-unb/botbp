@@ -14,9 +14,6 @@ module BotBP
 
     def read(type)
       data = load_data
-      puts data
-      puts type
-      puts data[type]
       data[type]
     end
 
@@ -56,10 +53,11 @@ module BotBP
       @file_path = "./data/users.json"
     end
 
-    def create(type, telegram_user_id, telegram_user_phone, gitlab_user_tag)
+    def create(type, telegram_user_id, telegram_user_phone, telegram_user_tag, gitlab_user_tag)
       new_user = {
         "telegram_user_id": telegram_user_id,
         "telegram_user_phone_number": telegram_user_phone,
+        "telegram_user_tag": telegram_user_tag,
         "gitlab_user_tag": gitlab_user_tag
       }
 
@@ -74,7 +72,7 @@ module BotBP
     def load_data
       JSON.parse(File.read(@file_path))
     rescue Errno::ENOENT
-      { "admins" => [] }
+      { "admin" => [] }
     end
   end
 
