@@ -2,11 +2,11 @@ require 'json'
 require 'gitlab'
 
 module BotBP
-  # Esta classe encapsula a funcionalidade de interação com a API do GitLab.
+  # Esta classe encapsula a funcionalidade de interação com a api do GitLab.
   class GitlabAPI
-    # Inicializa a classe GitLabAPI e configura a comunicacao com a API do gitlab.
+    # Inicializa a classe GitLabAPI e configura a comunicacao com a api do gitlab.
     def initialize
-      # Configura as credenciais para acessar a API do GitLab.
+      # Configura as credenciais para acessar a api do GitLab.
       Gitlab.configure do |config|
         config.endpoint = ENV["GITLAB_ENDPOINT"]
         config.private_token = ENV["GITLAB_PRIVATE_TOKEN"]
