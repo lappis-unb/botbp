@@ -50,7 +50,7 @@ module BotBP
 
   class DataUsers < DataManager
     def initialize
-      @file_path = "./data/users.json"
+      @file_path = "./app/data/users.json"
     end
 
     def create(type, telegram_user_id, telegram_user_tag, gitlab_user_tag)
@@ -75,7 +75,7 @@ module BotBP
 
   class DataGitlabProjects < DataManager
     def initialize
-      @file_path = "./data/gitlab_projects.json"
+      @file_path = "./app/data/gitlab_projects.json"
     end
 
     def create(type, project_id)
@@ -98,7 +98,7 @@ module BotBP
 
   class DataDaily < DataManager
     def initialize
-      @file_path = "./data/daily.json"
+      @file_path = "./app/data/daily.json"
     end
 
     def create(type, telegram_user_id, gitlab_user_tag, regex_find, daily_time)
