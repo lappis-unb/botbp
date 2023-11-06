@@ -43,18 +43,25 @@ module BotBP
     end
 
     def start_chat(bot, message)
-      response = verify_user(message.from.id)
-      bot.api.send_message(chat_id: message.from.id, text: "id: #{message.from.id} | #{response}")
+      response = verify_user(message)
+      # bot.api.send_message(chat_id: message.from.id, text: "id: #{message.from.id} | #{response}")
       @log.log("response; #{message.from.id}; #{response}")
+      kb =[]
       case response
       when 'admin'
-        show_admin_buttons(bot, message)
-        show_client_buttons(bot, message)
+        title = "Opcoes de admin"
+        kb.append(show_admin_buttons)
+        kb.append(show_client_buttons)
       when 'client'
-        show_client_buttons(bot, message)
+        title = "Opcoes de utilizador"
+        kb.append(show_client_buttons)
       else
-        show_guest_buttons(bot, message)
+        title = "Opcoes de usuario"
+        kb.append(show_guest_buttons)
       end
+      title += "\n\nEscolha a opcao que deseja gerenciar:"
+      markup = Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: kb)
+      bot.api.send_message(chat_id: message.from.id, text: title, reply_markup: markup)
     end
 
     def inlines_admins(bot, message)
@@ -74,50 +81,35 @@ module BotBP
       bot.api.answer_inline_query(inline_query_id: message.id, results: results)
     end
 
-    def show_admin_buttons(bot, message)
-      # Crie um teclado inline para opções de administrador
-      keyboard = Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: [
-        [
-          Telegram::Bot::Types::InlineKeyboardButton.new(text: 'Gerenciar Admins', callback_data: 'manage_admin'),
-          Telegram::Bot::Types::InlineKeyboardButton.new(text: 'Gerenciar repositorios do Gitlab', callback_data: 'manage_gitlab'),
-          Telegram::Bot::Types::InlineKeyboardButton.new(text: 'Gerenciar usuarios', callback_data: 'manage_users'),
-        ]
-      ])
-      text_admin =
-        "*OPCOES DE ADMIN*\n\nEscolha uma das opcoes"
-      bot.api.send_message(chat_id: message.chat.id, text: text_admin, reply_markup: keyboard)
+    def show_admin_buttons
+      [
+          Telegram::Bot::Types::InlineKeyboardButton.new(text: 'Admins', callback_data: "manage_admins"),
+          Telegram::Bot::Types::InlineKeyboardButton.new(text: 'Gitlab', callback_data: "manage_gitlab")
+       ]
     end
 
-    def show_client_buttons(bot, message)
-      # Crie um teclado inline para opções de clientes
-      keyboard = Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: [
-        [
-          Telegram::Bot::Types::InlineKeyboardButton.new(text: 'Gerenciar sua conta', callback_data: 'manage_account'),
-          Telegram::Bot::Types::InlineKeyboardButton.new(text: 'Gerenciar sua daily', callback_data: 'manage_daily')
-        ]
-      ])
-      text_client = "OPCOES DA SUA CONTA\n\nEscolha uma das opcoes"
-      bot.api.send_message(chat_id: message.chat.id, text: text_client, reply_markup: keyboard)
+    def show_client_buttons
+      [
+         Telegram::Bot::Types::InlineKeyboardButton.new(text: 'Conta', callback_data: "manage_account"),
+         Telegram::Bot::Types::InlineKeyboardButton.new(text: 'Daily', callback_data: "manage_daily")
+       ]
     end
 
-    def show_guest_buttons(bot, message)
-      # Crie um teclado inline para opções de visitantes
-      keyboard = Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: [
-        [
-          Telegram::Bot::Types::InlineKeyboardButton.new(text: 'Opção para visitantes', callback_data: 'guest_option')
-        ]
-      ])
-      bot.api.send_message(chat_id: message.chat.id, text: 'Escolha uma opção:', reply_markup: keyboard)
+    def show_guest_buttons
+      [
+         Telegram::Bot::Types::InlineKeyboardButton.new(text: 'Gerenciar sua conta', callback_data: "manage_account"),
+         Telegram::Bot::Types::InlineKeyboardButton.new(text: 'Gerenciar sua daily', callback_data: "manage_daily")
+       ]
     end
 
-    def verify_user (user_id)
+    def verify_user (message)
       users = @users.read('admin') # Lê a lista de usuários "admin"
       if users.count == 0
-        @log.log("#{user_id}; users nil", Logger::WARN)
-        @users.create('admin', user_id, '', '')
+        @log.log("#{message.from.id}; users nil", Logger::WARN)
+        @users.create('admin', message.from.id, '@' + message.from.username, '')
         return 'admin'
       else
-        admin = users.find { |admin| admin['telegram_user_id'] == user_id }
+        admin = users.find { |admin| admin['telegram_user_id'] == message.from.id }
         return 'admin' if admin
       end
 
