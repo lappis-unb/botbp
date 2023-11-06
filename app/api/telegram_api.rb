@@ -34,8 +34,6 @@ module BotBP
             case message.text
             when '/start'
               start_chat(bot, message)
-            when '/allin'
-              bot.api.send_message(chat_id: "", message_thread_id: "" , text: "Acertei?")
             when '/stop'
               bot.api.send_message(chat_id: message.from.id, text: "Até logo!")
             end
@@ -51,19 +49,19 @@ module BotBP
       kb =[]
       case response
       when 'admin'
-        title = "Opcoes de admin"
+        title = "*Opcoes de admin*"
         kb.append(show_admin_buttons)
         kb.append(show_client_buttons)
       when 'client'
-        title = "Opcoes de utilizador"
+        title = "*Opcoes de utilizador*"
         kb.append(show_client_buttons)
       else
-        title = "Opcoes de usuario"
+        title = "*Opcoes de usuario*"
         kb.append(show_guest_buttons)
       end
       title += "\n\nEscolha a opcao que deseja gerenciar:"
       markup = Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: kb)
-      bot.api.send_message(chat_id: message.from.id, text: title, reply_markup: markup)
+      bot.api.send_message(chat_id: message.from.id, text: title, parse_mode: "MarkdownV2", reply_markup: markup)
     end
 
     def inlines_admins(bot, message)
