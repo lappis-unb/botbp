@@ -53,18 +53,15 @@ module BotBP
       @file_path = "./data/users.json"
     end
 
-    def create(type, telegram_user_id, telegram_user_phone, telegram_user_tag, gitlab_user_tag)
+    def create(type, telegram_user_id, telegram_user_tag, gitlab_user_tag)
       new_user = {
         "telegram_user_id": telegram_user_id,
-        "telegram_user_phone_number": telegram_user_phone,
         "telegram_user_tag": telegram_user_tag,
         "gitlab_user_tag": gitlab_user_tag
       }
 
-      record = { 'type' => type }.merge(new_user)
-
       data = load_data
-      data[record['type']] << record
+      data[type] << new_user
       save_data(data)
     end
 
@@ -86,10 +83,8 @@ module BotBP
         "project_id": project_id
       }
 
-      record = { 'type' => type }.merge(new_project)
-
       data = load_data
-      data[record['type']] << record
+      data[type] << new_project
       save_data(data)
     end
 
@@ -114,10 +109,8 @@ module BotBP
         "daily-time": daily_time
       }
 
-      record = { 'type' => type }.merge(new_daily)
-
       data = load_data
-      data[record['type']] << record
+      data[type] << new_daily
       save_data(data)
     end
 
