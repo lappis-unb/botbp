@@ -3,10 +3,12 @@ require_relative 'api/telegram_api'
 require_relative 'server/web_hook_app'
 require_relative 'server/post_to_web_hook'
 require_relative 'log/log'
+require_relative 'data/report_manager'
 
 module BotBP
   class Manager
     def start_software
+      start_report
       start_bot
       start_webhook
       start_test
@@ -45,6 +47,15 @@ module BotBP
       end
 
       thread_test.join
+    end
+
+    def start_report
+      thread_report = Thread.new do
+        report_manager = BotBP::ReportManager.new
+        report_manager.schedule_reports
+      end
+
+      thread_report.join
     end
   end
 end

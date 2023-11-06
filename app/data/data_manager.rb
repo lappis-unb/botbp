@@ -121,4 +121,30 @@ module BotBP
       { "report" => [] }
     end
   end
+
+  class DataConfig < DataManager
+    def initialize
+      @file_path = "./app/data/config.json"
+    end
+
+    def create(type, telegram_user_id, gitlab_user_tag, regex_find, daily_time)
+      new_daily = {
+        "telegram-user-id": telegram_user_id,
+        "gitlab-user-tag": gitlab_user_tag,
+        "regex-find": regex_find,
+        "daily-time": daily_time
+      }
+
+      data = load_data
+      data[type] << new_daily
+      save_data(data)
+    end
+
+    private
+    def load_data
+      JSON.parse(File.read(@file_path))
+    rescue Errno::ENOENT
+      { "report" => [] }
+    end
+  end
 end
