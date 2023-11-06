@@ -2,6 +2,5 @@
 .idea
 *.log
 
-data/daily.json
-data/gitlab_projects.json
-data/users.json
+app/data/*.json
+

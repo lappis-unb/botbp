@@ -1,7 +1,7 @@
 require 'json'
 require 'telegram/bot'
 require 'dotenv/load'
-require_relative '../../data/data_manager'
+require_relative '../data/data_manager'
 
 module BotBP
   class TelegramAPI
@@ -34,6 +34,8 @@ module BotBP
             case message.text
             when '/start'
               start_chat(bot, message)
+            when '/allin'
+              bot.api.send_message(chat_id: "", message_thread_id: "" , text: "Acertei?")
             when '/stop'
               bot.api.send_message(chat_id: message.from.id, text: "Até logo!")
             end

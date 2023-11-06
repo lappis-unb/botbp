@@ -17,7 +17,7 @@ bundle install
 Iniciar o manager.rb
 
 ```shell
-cd scripts/
+cd app/
 ruby manager.rb
 ```
 
