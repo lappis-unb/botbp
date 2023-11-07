@@ -13,6 +13,11 @@ module BotBP
       end
     end
 
+    def get_projects_by_group(group_id)
+      projects = Gitlab.group_projects(group_id)
+      projects.map { |project| project.id }
+    end
+
     # Obtém uma lista de issues para um projeto específico.
     #
     # @param project_id [Integer] O ID do projeto.
