@@ -14,4 +14,4 @@ RUN bundle install
 COPY . .
 
 # Comando de inicialização
-CMD ["ruby", "./scripts/manager.rb"]
+CMD ["ruby", "./app/manager.rb"]
