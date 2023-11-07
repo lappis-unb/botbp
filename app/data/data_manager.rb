@@ -103,10 +103,10 @@ module BotBP
 
     def create(type, telegram_user_id, gitlab_user_tag, regex_find, daily_time)
       new_daily = {
-        "telegram-user-id": telegram_user_id,
-        "gitlab-user-tag": gitlab_user_tag,
-        "regex-find": regex_find,
-        "daily-time": daily_time
+        "telegram_user_id": telegram_user_id,
+        "gitlab_user_tag": gitlab_user_tag,
+        "regex_find": regex_find,
+        "daily_time": daily_time
       }
 
       data = load_data
@@ -122,21 +122,22 @@ module BotBP
     end
   end
 
-  class DataConfig < DataManager
+  class DataServers < DataManager
     def initialize
-      @file_path = "./app/data/config.json"
+      @file_path = "./app/data/servers.json"
     end
 
-    def create(type, telegram_user_id, gitlab_user_tag, regex_find, daily_time)
-      new_daily = {
-        "telegram-user-id": telegram_user_id,
-        "gitlab-user-tag": gitlab_user_tag,
-        "regex-find": regex_find,
-        "daily-time": daily_time
+    def create(type, chat_id, message_thread_id, disable_web_page_preview, disable_notification, protect_content)
+      new_server = {
+        "chat_id": chat_id,
+        "message_thread_id": message_thread_id,
+        "disable_web_page_preview": disable_web_page_preview,
+        "disable_notification": disable_notification,
+        "protect_content": protect_content
       }
 
       data = load_data
-      data[type] << new_daily
+      data[type] << new_server
       save_data(data)
     end
 
@@ -144,7 +145,7 @@ module BotBP
     def load_data
       JSON.parse(File.read(@file_path))
     rescue Errno::ENOENT
-      { "report" => [] }
+      { "server_daily" => [], "server_update" => [] }
     end
   end
 end

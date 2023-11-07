@@ -7,12 +7,16 @@ module BotBP
   class TelegramAPI
     def initialize
       @token = ENV['TELEGRAM_TOKEN']
-      @users = BotBP::DataUsers.new
       @log = BotBP::Log.new(log_file_path = "telegram_api.log")
+      @users = BotBP::DataUsers.new
+      @servers = BotBP::DataServers.new
+      @gitlab = BotBP::GitlabAPI.new
     end
 
     def run_bot
+      puts "Rodando o bot"
       Telegram::Bot::Client.run(@token) do |bot|
+        @bot_running = bot
         bot.logger.info('Bot has been started')
         bot.listen do |message|
           puts message.class
@@ -34,6 +38,8 @@ module BotBP
             case message.text
             when '/start'
               start_chat(bot, message)
+            when '/teste'
+
             when '/stop'
               bot.api.send_message(chat_id: message.from.id, text: "Até logo!")
             end
@@ -41,6 +47,21 @@ module BotBP
         end
       end
     end
+
+    def send_update(payload)
+      servers = @servers.read("server_update")
+
+      servers.each do |server|
+        @bot_running.api.send_message(chat_id: server["chat_id"],
+                                      message_thread_id: server["message_thread_id"],
+                                      disable_web_page_preview: server["disable_web_page_preview"],
+                                      disable_notification: server["disable_notification"],
+                                      protect_content: server["protect_content"],
+                                      text: payload)
+      end
+    end
+
+    private
 
     def start_chat(bot, message)
       response = verify_user(message)
