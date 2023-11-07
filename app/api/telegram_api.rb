@@ -49,6 +49,10 @@ module BotBP
     end
 
     def send_update(payload)
+      payload = JSON.parse(payload)
+
+      text = "#{payload["key1"]}. #{payload["key2"]}"
+
       servers = @servers.read("server_update")
 
       servers.each do |server|
@@ -57,7 +61,7 @@ module BotBP
                                       disable_web_page_preview: server["disable_web_page_preview"],
                                       disable_notification: server["disable_notification"],
                                       protect_content: server["protect_content"],
-                                      text: payload)
+                                      text: text)
       end
     end
 

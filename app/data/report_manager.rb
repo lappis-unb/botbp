@@ -30,10 +30,7 @@ module BotBP
     end
 
     def process_report(telegram_user_id, gitlab_user_tag, regex_find)
-      # Implemente aqui a lógica para processar o relatório
-      # Você pode chamar a função desejada passando os parâmetros necessários.
-      puts "Processando relatório para user ID: #{telegram_user_id}, GitLab User Tag: #{gitlab_user_tag}, Regex: #{regex_find}"
-      # Chame a função ou método apropriado aqui com os dados do relatório.
+
     end
   end
 end

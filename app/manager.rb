@@ -19,7 +19,7 @@ module BotBP
       # Inicie as threads
       start_bot
       start_webhook
-      start_test
+      # start_test
       start_report
 
       # Aguarde todas as threads concluírem
@@ -46,14 +46,14 @@ module BotBP
 
     def start_test
       thread_test = Thread.new do
-        url = 'http://localhost:4567/gitlab-webhook'
-        request_body = { key1: 'value1', key2: 'value2' }.to_json
+        url = 'http://localhost:8080/bot-bp'
+        request_body = { key1: 'PHIU PHIUU', key2: 'OLHA A MENSAGEM!!!' }.to_json
         post_html = BotBP::PostToWebHook.new
-        sleep(6)
-        10.times do
+        sleep(2)
+        3.times do
           puts "estou enviando a requisicao"
           post_html.post_to_webhook(url, request_body)
-          sleep(3)
+          sleep(5)
         end
       end
       @@threads << thread_test
