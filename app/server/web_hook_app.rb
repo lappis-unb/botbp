@@ -3,13 +3,12 @@ require 'json'
 
 module BotBP
   class WebHookApp < Sinatra::Base
-    set :server, :thin
-    set :port, 8080  # Defina a porta desejada, como 8080
+    set :bind, '0.0.0.0'
+    set :port, 80
 
     post '/bot-bp' do
-      payload = JSON.parse(request.body.read)
 
-      BotBP::Manager.bot_telegram.send_update(payload)
+      BotBP::Manager.bot_telegram.send_update(request.body.read)
 
       status 200
     end
