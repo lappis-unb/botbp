@@ -8,7 +8,7 @@ module BotBP
 
     post '/bot-bp' do
 
-      BotBP::Manager.bot_telegram.send_update(request.body.read)
+      BotBP::Manager.bot_telegram.send_update(request)
 
       status 200
     end

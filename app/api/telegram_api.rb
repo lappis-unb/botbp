@@ -48,10 +48,21 @@ module BotBP
       end
     end
 
-    def send_update(payload)
-      payload = JSON.parse(payload)
+    def send_update(request)
+      puts request.header.read
+      payload = JSON.parse(request.body.read)
+      text = ""
+      if payload["object_kind"] == "push"
+        user_username = payload["user_username"]
+        user_name = payload["user_name"]
+        repository_name = payload["repository"]["name"]
+        repository_web_url = payload["repository"]["homepage"]
+        commits = payload["commits"]
 
-      text = "#{payload["key1"]}. #{payload["key2"]}"
+        header = "*PUSH* - [#{user_username}](https://gitlab.com/#{user_username})\n\n#{user_name} acabou de enviar #{commits.length} commits para o nosso repositório [#{repository_name}](#{repository_web_url})! \uD83D\uDE80"
+        commit_messages = commits.map { |commit| "[#{commit['title']}]#{commit['url']}" }.join("\n")
+        text = "#{header}\n\n#{commit_messages}"
+      end
 
       servers = @servers.read("server_update")
 
@@ -61,6 +72,7 @@ module BotBP
                                       disable_web_page_preview: server["disable_web_page_preview"],
                                       disable_notification: server["disable_notification"],
                                       protect_content: server["protect_content"],
+                                      parse_mode: "MarkdownV2",
                                       text: text)
       end
     end
