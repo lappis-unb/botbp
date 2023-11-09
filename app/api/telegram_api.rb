@@ -50,24 +50,98 @@ module BotBP
 
     def send_update(request)
       x_gitlab_event = request.env['HTTP_X_GITLAB_EVENT']
+
+      parse_mode = "HTML"
+
       payload = JSON.parse(request.body.read)
       text = ""
       case x_gitlab_event
       when 'Push Hook'
         user_username = payload["user_username"]
         user_name = payload["user_name"]
-        repository_name = payload["repository"]["name"]
-        repository_web_url = payload["repository"]["homepage"]
+        repository = payload["repository"]
         commits = payload["commits"]
+      
+        repository_name = repository["name"]
+        repository_web_url = repository["homepage"]
+        branch = payload["ref"].split("/").last
+        branch_url = "#{repository_web_url}/-/tree/#{branch}?ref_type=heads"
+      
+        header = "<b>PUSH</b>\n\n"
+        header += "<b>Repositório</b>: <a href='#{repository_web_url}'>#{repository_name}</a>\n"
+        header += "<b>Branch</b>: <a href='#{branch_url}'>#{branch}</a>\n\n"
+        header += "<a href='https://gitlab.com/#{user_username}'>#{user_name}</a> acabou de enviar #{commits.length} commits para o nosso repositório! 🚀"
+      
+        commit_messages = commits.map.with_index(1) do |commit, index|
+          "#{index}. <a href='#{commit['url']}'>#{commit['title']}</a>"
+        end.join("\n")
+      
+        text = "#{header}\n\n#{commit_messages}"      
+      when 'Issue Hook'
+        user_name = payload["user"]["name"]
+        issue_title = payload["object_attributes"]["title"]
+        issue_description = payload["object_attributes"]["description"]
+        issue_url = payload["object_attributes"]["url"]
+        issue_state = payload["object_attributes"]["action"]
+        issue_labels = payload["labels"].map { |label| label["title"] }.join(", ")
+        assignees = payload["assignees"]
+        
+        case issue_state
+        when 'open'
+          header = "🤭 <b>Issue criada</b>\n\n"
+        when 'close'
+          header = "😍 <b>Issue fechada</b>\n\n"
+        when 'reopen'
+          header = "😩 <b>Issue reaberta</b>\n\n"
+        when 'update'
+          header = "🫣 <b>Issue atualizada</b>\n\n"
+        else
+          header = "🤔 Nao identifiquei o estado da issue\n\n"
+        end
 
-        header = "*PUSH* - [#{user_username}](https://gitlab.com/#{user_username})\n\n#{user_name} acabou de enviar #{commits.length} commits para o nosso repositório [#{repository_name}](#{repository_web_url})! 🚀"
-        commit_messages = commits.map.with_index(1) { |commit, index| "#{index}. [#{commit['title']}](#{commit['url']})" }.join("\n\n")
-        text = "#{header}\n\n#{commit_messages}"
+        header += "<b>Autor</b>: #{user_name}\n"
+        header += "<b>Título</b>: <a href='#{issue_url}'>#{issue_title}</a>\n"
+        #header += "<b>Descrição</b>: #{issue_description}\n"
+        #header += "<b>Estado</b>: #{issue_state}\n"
+        header += "<b>Labels</b>: #{issue_labels}\n"
+
+        if assignees.any?
+          header += "\n\n"
+          assignee_names = assignees.map { |assignee| assignee["name"] }.join(", ")
+          header += "Assignees: #{assignee_names}"
+        end
+      
+        text = "#{header}"
+      when 'Merge Request Hook'
+        user_name = payload["user"]["name"]
+        merge_request_title = payload["object_attributes"]["title"]
+        merge_request_description = payload["object_attributes"]["description"]
+        merge_request_url = payload["object_attributes"]["url"]
+        merge_request_source_branch = payload["object_attributes"]["source_branch"]
+        merge_request_target_branch = payload["object_attributes"]["target_branch"]
+        merge_request_state = payload["object_attributes"]["state"]
+        merge_request_labels = payload["labels"].map { |label| label["title"] }.join(", ")
+        last_commit_message = payload["object_attributes"]["last_commit"]["message"]
+        last_commit_author = payload["object_attributes"]["last_commit"]["author"]["name"]
+      
+        header = "<b>NOVA SOLICITAÇÃO DE MERGE</b>\n\n"
+        header += "<b>Autor</b>: #{user_name}\n"
+        header += "<b>Título</b>: <a href='#{merge_request_url}'>#{merge_request_title}</a>\n"
+        header += "<b>Branch de origem</b>: #{merge_request_source_branch}\n"
+        header += "<b>Branch de destino</b>: #{merge_request_target_branch}\n"
+        header += "<b>Estado</b>: #{merge_request_state}\n"
+        header += "<b>Labels</b>: #{merge_request_labels}\n"
+        #header += "<b>Último Commit</b>: #{last_commit_message}\n"
+        #header += "<b>Autor do Último Commit</b>: #{last_commit_author}\n"
+      
+        text = "#{header}"
       end
       
-      text = text.gsub('-', '\-')
-      text = text.gsub('!', '\!')
-      text = text.gsub('.', '\.')
+      if text == ""
+        text = x_gitlab_event
+      end
+
+      text = text.gsub(/<!--(.*?)-->/m, "")
 
       servers = @servers.read("server_update")
 
@@ -77,7 +151,7 @@ module BotBP
                                       disable_web_page_preview: server["disable_web_page_preview"],
                                       disable_notification: server["disable_notification"],
                                       protect_content: server["protect_content"],
-                                      parse_mode: "MarkdownV2",
+                                      parse_mode: parse_mode,
                                       text: text)
       end
     end
