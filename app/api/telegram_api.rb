@@ -49,20 +49,25 @@ module BotBP
     end
 
     def send_update(request)
-      puts request.header.read
+      x_gitlab_event = request.env['HTTP_X_GITLAB_EVENT']
       payload = JSON.parse(request.body.read)
       text = ""
-      if payload["object_kind"] == "push"
+      case x_gitlab_event
+      when 'Push Hook'
         user_username = payload["user_username"]
         user_name = payload["user_name"]
         repository_name = payload["repository"]["name"]
         repository_web_url = payload["repository"]["homepage"]
         commits = payload["commits"]
 
-        header = "*PUSH* - [#{user_username}](https://gitlab.com/#{user_username})\n\n#{user_name} acabou de enviar #{commits.length} commits para o nosso repositório [#{repository_name}](#{repository_web_url})! \uD83D\uDE80"
-        commit_messages = commits.map { |commit| "[#{commit['title']}]#{commit['url']}" }.join("\n")
+        header = "*PUSH* - [#{user_username}](https://gitlab.com/#{user_username})\n\n#{user_name} acabou de enviar #{commits.length} commits para o nosso repositório [#{repository_name}](#{repository_web_url})! 🚀"
+        commit_messages = commits.map.with_index(1) { |commit, index| "#{index}. [#{commit['title']}](#{commit['url']})" }.join("\n\n")
         text = "#{header}\n\n#{commit_messages}"
       end
+      
+      text = text.gsub('-', '\-')
+      text = text.gsub('!', '\!')
+      text = text.gsub('.', '\.')
 
       servers = @servers.read("server_update")
 
