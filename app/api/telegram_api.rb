@@ -79,6 +79,7 @@ module BotBP
         text = "#{header}\n\n#{commit_messages}"      
       when 'Issue Hook'
         user_name = payload["user"]["name"]
+        user_username = payload["user"]["username"]
         issue_title = payload["object_attributes"]["title"]
         issue_description = payload["object_attributes"]["description"]
         issue_url = payload["object_attributes"]["url"]
@@ -99,7 +100,7 @@ module BotBP
           header = "🤔 Nao identifiquei o estado da issue\n\n"
         end
 
-        header += "<b>Autor</b>: #{user_name}\n"
+        header += "<b>Autor</b>: <a href='https://gitlab.com/#{user_username}'>#{user_name}</a>\n"
         header += "<b>Título</b>: <a href='#{issue_url}'>#{issue_title}</a>\n"
         #header += "<b>Descrição</b>: #{issue_description}\n"
         #header += "<b>Estado</b>: #{issue_state}\n"
@@ -107,8 +108,10 @@ module BotBP
 
         if assignees.any?
           header += "\n\n"
-          assignee_names = assignees.map { |assignee| assignee["name"] }.join(", ")
-          header += "Assignees: #{assignee_names}"
+          assignee_names = assignees.map do |assignee|
+            "<a href='https://gitlab.com/#{assignee["username"]}'>#{assignee["name"]}</a>"
+          end
+          header += "Assignees: #{assignee_names.join(", ")}"
         end
       
         text = "#{header}"
@@ -157,6 +160,28 @@ module BotBP
     end
 
     private
+
+    def send_update_to_user(gitlab_user_tag, text, parse_mode)
+      users = @users.read("users")
+      user_id = nil
+
+      users.each do |user|
+        if user["gitlab_user_tag"] == gitlab_user_tag
+          unless user["notify_issue"]
+            return
+          end
+
+          user_id = user["telegram_user_id"]
+          break
+        end
+      end
+
+      if user_id
+        @bot_running.api.send_message(chat_id: user_id,
+                                      parse_mode: parse_mode,
+                                      text: text)
+      end
+    end
 
     def start_chat(bot, message)
       response = verify_user(message)
@@ -219,14 +244,14 @@ module BotBP
     end
 
     def verify_user (message)
-      users = @users.read('admin') # Lê a lista de usuários "admin"
+      users = @users.read('users') # Lê a lista de usuários "admin"
       if users.count == 0
         @log.log("#{message.from.id}; users nil", Logger::WARN)
         @users.create('admin', message.from.id, '@' + message.from.username, '')
         return 'admin'
       else
-        admin = users.find { |admin| admin['telegram_user_id'] == message.from.id }
-        return 'admin' if admin
+        user = users.find { |user| user['telegram_user_id'] == message.from.id }
+        return user["type"] if user
       end
 
       'none'
