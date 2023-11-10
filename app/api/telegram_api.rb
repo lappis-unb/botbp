@@ -25,8 +25,10 @@ module BotBP
           when Telegram::Bot::Types::InlineQuery
             @log.log("inline-query; #{message.from.id}; #{message.query}")
             case message.query
-            when "adm", "admin", "admins",
+            when "admins",
               inlines_admins(bot, message)
+            else
+              bot.api.answer_inline_query(inline_query_id: message.id, results: nil)
             end
 
           when Telegram::Bot::Types::CallbackQuery
@@ -182,6 +184,7 @@ module BotBP
 
       if user_id
         @bot_running.api.send_message(chat_id: user_id,
+                                      disable_web_page_preview: true,
                                       parse_mode: parse_mode,
                                       text: text)
       end
@@ -210,7 +213,8 @@ module BotBP
     end
 
     def inlines_admins(bot, message)
-      admins = @users.read("admin")
+      users = @users.read("users")
+      admins = users.select { |user| user["type"] == "admin" }
       results = [
         [1, 'Admins do bot', admins]
       ].map do |arr|
