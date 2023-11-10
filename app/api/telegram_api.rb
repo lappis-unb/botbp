@@ -106,15 +106,19 @@ module BotBP
         #header += "<b>Estado</b>: #{issue_state}\n"
         header += "<b>Labels</b>: #{issue_labels}\n"
 
+        gitlab_tags =[]
         if assignees.any?
           header += "\n\n"
           assignee_names = assignees.map do |assignee|
+            gitlab_tags.append(assignee["username"])
             "<a href='https://gitlab.com/#{assignee["username"]}'>#{assignee["name"]}</a>"
           end
           header += "Assignees: #{assignee_names.join(", ")}"
         end
       
         text = "#{header}"
+
+        gitlab_tags.each { |tag| send_update_to_user(tag, text, parse_mode) }
       when 'Merge Request Hook'
         user_name = payload["user"]["name"]
         merge_request_title = payload["object_attributes"]["title"]
