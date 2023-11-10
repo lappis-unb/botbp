@@ -55,13 +55,14 @@ module BotBP
 
     def create(type, telegram_user_id, telegram_user_tag, gitlab_user_tag)
       new_user = {
+        "type": type,
         "telegram_user_id": telegram_user_id,
         "telegram_user_tag": telegram_user_tag,
         "gitlab_user_tag": gitlab_user_tag
       }
 
       data = load_data
-      data[type] << new_user
+      data["users"] << new_user
       save_data(data)
     end
 
@@ -69,7 +70,7 @@ module BotBP
     def load_data
       JSON.parse(File.read(@file_path))
     rescue Errno::ENOENT
-      { "admin" => [] }
+      { "users" => [] }
     end
   end
 
